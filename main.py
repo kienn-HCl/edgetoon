@@ -1,9 +1,9 @@
 import cv2
 import numpy as np
-from matplotlib import pyplot as plt
 
 # 画像を読み込む
-image_path = "./wallpaper1.jpg"
+image_path = "sample_image.jpg"
+output_path = "edgetoon_image.jpg"
 image = cv2.imread(image_path)
 
 # 画像が正常に読み込まれたか確認
@@ -14,7 +14,8 @@ if image is None:
 image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
 
 # 1. エッジ検出（輪郭を強調）
-gray = cv2.cvtColor(image, cv2.COLOR_RGB2GRAY) edges = cv2.Canny(gray, threshold1=100, threshold2=200)
+gray = cv2.cvtColor(image, cv2.COLOR_RGB2GRAY)
+edges = cv2.Canny(gray, threshold1=100, threshold2=200)
 
 # 輪郭線を太くする
 edges = cv2.dilate(edges, np.ones((1, 1), np.uint8), iterations=1)
@@ -37,16 +38,8 @@ quantized = quantized.reshape(smooth.shape)
 edges = cv2.cvtColor(edges, cv2.COLOR_GRAY2RGB)  # 3チャンネル化
 cartoon = cv2.subtract(quantized, edges)  # 輪郭を重ねる
 
-# 結果を表示
-plt.figure(figsize=(12, 6))
-plt.subplot(1, 2, 1)
-plt.imshow(image)
-plt.title("Original Image")
-plt.axis("off")
+# RGB から BGR に戻して保存
+cartoon_bgr = cv2.cvtColor(cartoon, cv2.COLOR_RGB2BGR)
+cv2.imwrite(output_path, cartoon_bgr)
 
-plt.subplot(1, 2, 2)
-plt.imshow(cartoon)
-plt.title("Cel-Shaded (Anime) Image")
-plt.axis("off")
-
-plt.show()
+print(f"カートゥーン風画像を {output_path} に保存しました。")
